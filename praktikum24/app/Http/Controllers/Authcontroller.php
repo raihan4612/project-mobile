@@ -20,19 +20,31 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email'    => 'required|email',
+            'login'    => 'required|string',
             'password' => 'required',
         ]);
 
-        if (Auth::attempt($request->only('email', 'password'))) {
+        $login    = $request->input('login');
+        $password = $request->input('password');
+
+        $user = null;
+
+        if (Auth::attempt(['nim' => $login, 'password' => $password])) {
+            $user = Auth::user();
+        } elseif (str_contains($login, '@')
+            && Auth::attempt(['email' => $login, 'password' => $password])) {
+            $user = Auth::user();
+        }
+
+        if ($user) {
             $request->session()->regenerate();
 
             // Redirect berbeda sesuai role
-            return $this->redirectByRole(Auth::user());
+            return $this->redirectByRole($user);
         }
 
         return back()->withErrors([
-            'email' => 'Email atau password salah.',
+            'login' => 'NIM/email atau password salah.',
         ]);
     }
 

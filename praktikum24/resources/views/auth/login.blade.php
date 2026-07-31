@@ -41,11 +41,11 @@
         <form action="{{ route('do-login') }}" method="POST">
             @csrf
             <div class="mb-3">
-                <label class="form-label fw-semibold">Email</label>
+                <label class="form-label fw-semibold">NIM atau Email</label>
                 <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                    <input type="email" name="email" class="form-control"
-                           value="{{ old('email') }}" placeholder="email@example.com" required>
+                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                    <input type="text" name="login" class="form-control"
+                           value="{{ old('login') }}" placeholder="NIM atau email@example.com" required>
                 </div>
             </div>
             <div class="mb-4">
