@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIMAK Mobile - Sistem Informasi Mahasiswa</title>
+<meta name="description" content="Unduh SIMAK Mobile — Sistem Informasi Mahasiswa. Akses data akademik, buku perpustakaan, prestasi, dan beasiswa dalam satu aplikasi.">
+<style>
+  :root {
+    --indigo: #3949AB;
+    --indigo-2: #3F51B5;
+    --purple: #7B1FA2;
+    --purple-2: #673AB7;
+    --ink: #1e2d42;
+    --muted: #5c6b82;
+    --bg: #f5f6fa;
+    --card: #ffffff;
+    --border: #e6e9f2;
+    --accent: #f0a500;
+    --green: #2e9e6b;
+    --red: #d64545;
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; scroll-padding-top: 74px; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.65;
+  }
+  a { text-decoration: none; color: inherit; }
+  img { max-width: 100%; display: block; }
+  .gradient { background: linear-gradient(135deg, var(--indigo) 0%, var(--purple) 100%); }
+
+  .container { max-width: 1060px; margin: 0 auto; padding: 0 22px; }
+  section { padding: 66px 0; }
+  .section-head { text-align: center; max-width: 720px; margin: 0 auto 42px; }
+  .section-head .kicker {
+    display: inline-block; font-size: .74rem; font-weight: 700;
+    letter-spacing: 1.6px; text-transform: uppercase;
+    color: var(--purple); background: rgba(103,58,183,.08);
+    border: 1px solid rgba(103,58,183,.18);
+    padding: 4px 12px; border-radius: 999px; margin-bottom: 12px;
+  }
+  .section-head h2 { font-size: clamp(1.5rem, 3.2vw, 2.05rem); font-weight: 800; }
+  .section-head p { color: var(--muted); margin-top: 10px; font-size: .98rem; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: 0 2px 10px rgba(31,45,66,.05);
+    padding: 26px;
+  }
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px; }
+
+  /* ============ NAV ============ */
+  nav.top {
+    position: sticky; top: 0; z-index: 500;
+    background: rgba(255,255,255,.92); backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  nav.top .container { display: flex; align-items: center; justify-content: space-between; height: 62px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.02rem; }
+  .brand img { width: 34px; height: 34px; border-radius: 9px; }
+  .nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+  .nav-links a { font-size: .82rem; font-weight: 600; color: var(--muted); padding: 6px 10px; border-radius: 8px; transition: .15s; }
+  .nav-links a:hover { color: var(--purple); background: rgba(103,58,183,.08); }
+  .nav-btn { display: none; }
+  @media (max-width: 980px) {
+    .nav-links { display: none; }
+    .nav-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--gradient, linear-gradient(135deg, var(--indigo-2), var(--purple-2)));
+      background: linear-gradient(135deg, var(--indigo-2), var(--purple-2));
+      color: #fff; border: none; border-radius: 9px; padding: 8px 14px; font-weight: 700; font-size: .84rem;
+      cursor: pointer;
+    }
+    nav.top.open .nav-links {
+      display: flex; position: absolute; top: 62px; left: 0; right: 0;
+      flex-direction: column; background: #fff; border-bottom: 1px solid var(--border);
+      padding: 12px 22px 18px;
+    }
+  }
+
+  /* ============ HERO ============ */
+  .hero { color: #fff; padding: 70px 0 84px; position: relative; overflow: hidden; }
+  .hero::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(circle at 12% 18%, rgba(255,255,255,.14) 0, transparent 38%),
+      radial-gradient(circle at 88% 82%, rgba(255,255,255,.10) 0, transparent 40%);
+  }
+  .hero .container { position: relative; z-index: 1; display: grid; grid-template-columns: 1.15fr .85fr; gap: 40px; align-items: center; }
+  .hero .badge {
+    display: inline-block; background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.35);
+    padding: 4px 14px; border-radius: 999px; font-size: .76rem; font-weight: 700;
+    letter-spacing: .8px; text-transform: uppercase; margin-bottom: 16px;
+  }
+  .hero h1 { font-size: clamp(2rem, 5vw, 3.1rem); font-weight: 800; letter-spacing: .3px; line-height: 1.15; }
+  .hero .tagline { margin-top: 16px; font-size: 1.14rem; color: rgba(255,255,255,.92); max-width: 540px; }
+  .hero .desc { margin-top: 14px; font-size: .94rem; color: rgba(255,255,255,.78); max-width: 560px; }
+  .hero-cta { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 28px; }
+  .btn-download {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: #fff; color: var(--purple-2); font-weight: 800; font-size: 1rem;
+    padding: 15px 28px; border-radius: 13px;
+    box-shadow: 0 10px 26px rgba(0,0,0,.22);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .btn-download:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(0,0,0,.30); }
+  .btn-download svg { width: 22px; height: 22px; }
+  .hero-stats { display: flex; gap: 26px; flex-wrap: wrap; margin-top: 34px; }
+  .hero-stats .stat b { display: block; font-size: 1.5rem; font-weight: 800; }
+  .hero-stats .stat span { font-size: .8rem; color: rgba(255,255,255,.72); }
+
+  /* Phone mockup */
+  .phone-wrap { display: flex; justify-content: center; }
+  .phone {
+    width: 230px; height: 470px; border-radius: 34px; background: #0e1220;
+    padding: 12px; box-shadow: 0 30px 60px rgba(0,0,0,.35);
+  }
+  .phone .screen { height: 100%; border-radius: 24px; overflow: hidden; background: var(--bg); position: relative; }
+  .phone .p-status { display: flex; justify-content: space-between; font-size: .62rem; color: #fff; padding: 10px 14px 4px; }
+  .phone .p-appbar {
+    background: linear-gradient(135deg, var(--indigo), var(--purple));
+    color: #fff; padding: 10px 16px 14px; border-radius: 0 0 20px 20px;
+  }
+  .phone .p-appbar b { font-size: .86rem; display: block; }
+  .phone .p-appbar span { font-size: .62rem; opacity: .85; }
+  .phone .p-cards { padding: 14px; display: grid; gap: 10px; }
+  .phone .p-card { background: #fff; border-radius: 12px; padding: 10px 12px; box-shadow: 0 1px 6px rgba(31,45,66,.06); }
+  .phone .p-card .bar { height: 8px; border-radius: 5px; background: #eceef6; margin: 6px 0; }
+  .phone .p-card .bar.w40 { width: 40%; } .phone .p-card .bar.w70 { width: 70%; }
+  .phone .p-card small { font-size: .6rem; color: var(--muted); }
+  .phone .p-chip { display: inline-block; font-size: .56rem; background: linear-gradient(135deg,var(--indigo-2),var(--purple-2)); color: #fff; border-radius: 999px; padding: 3px 9px; }
+
+  @media (max-width: 820px) {
+    .hero .container { grid-template-columns: 1fr; text-align: center; }
+    .hero .tagline, .hero .desc { margin-left: auto; margin-right: auto; }
+    .hero-cta, .hero-stats { justify-content: center; }
+    .phone-wrap { order: -1; margin-bottom: 10px; }
+  }
+
+  /* ============ TENTANG ============ */
+  .about-cards h3 { font-size: 1.02rem; margin-bottom: 6px; }
+  .about-cards p { font-size: .9rem; color: var(--muted); }
+  .about-cards .ic {
+    width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center;
+    color: #fff; font-size: 1.35rem; margin-bottom: 12px;
+  }
+
+  /* ============ KEUNGGULAN ============ */
+  .feature { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; box-shadow: 0 2px 10px rgba(31,45,66,.05); transition: transform .18s ease, box-shadow .18s ease; }
+  .feature:hover { transform: translateY(-4px); box-shadow: 0 12px 26px rgba(31,45,66,.10); }
+  .feature .f-icon { width: 48px; height: 48px; border-radius: 13px; display: grid; place-items: center; color: #fff; font-size: 1.4rem; margin-bottom: 14px; }
+  .feature h3 { font-size: 1.03rem; margin-bottom: 6px; }
+  .feature p { font-size: .88rem; color: var(--muted); }
+
+  /* ============ TABEL ============ */
+  .table-wrap { overflow-x: auto; }
+  table.tbl { width: 100%; border-collapse: collapse; font-size: .88rem; min-width: 520px; }
+  table.tbl th, table.tbl td { border: 1px solid var(--border); padding: 10px 12px; text-align: left; }
+  table.tbl th { background: linear-gradient(135deg, var(--indigo), var(--purple)); color: #fff; font-weight: 700; font-size: .8rem; text-transform: uppercase; letter-spacing: .4px; }
+  table.tbl tr:nth-child(even) td { background: #fafbfe; }
+  .yes { color: var(--green); font-weight: 800; }
+  .no { color: var(--red); font-weight: 800; }
+  .note { font-size: .84rem; background: #fdf6e6; border: 1px solid #f3e2b5; border-radius: 10px; padding: 10px 14px; margin-top: 14px; }
+
+  /* chips modul */
+  .modul { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+  .modul .chip {
+    background: var(--card); border: 1px solid var(--border); border-radius: 999px;
+    padding: 8px 15px; font-size: .85rem; font-weight: 600;
+    box-shadow: 0 1px 6px rgba(31,45,66,.05);
+  }
+  .modul .chip b { color: var(--purple); }
+
+  /* alur */
+  .flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; }
+  .flow .role-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .flow .role-head .dot { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 800; }
+  .flow .role-head b { font-size: 1rem; }
+  .flow ol { margin: 0 0 0 18px; font-size: .88rem; color: var(--muted); }
+  .flow ol li { margin: 4px 0; }
+
+  /* teknologi */
+  .tech { display: flex; flex-wrap: wrap; gap: 14px; }
+  .tech .pill {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px; min-width: 200px; flex: 1 1 200px;
+    display: flex; gap: 14px; align-items: flex-start;
+  }
+  .tech .pill .pill-ic {
+    flex-shrink: 0; width: 46px; height: 46px; border-radius: 13px;
+    display: grid; place-items: center; font-size: 1.35rem;
+    background: linear-gradient(135deg, var(--indigo-2), var(--purple-2));
+    box-shadow: 0 6px 14px rgba(103,58,183,.28);
+  }
+  .tech .pill .p-txt { flex: 1; min-width: 0; }
+  .tech .pill .cat { font-size: .7rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--purple); margin-bottom: 6px; }
+  .tech .pill b { font-size: .98rem; }
+  .tech .pill p { font-size: .82rem; color: var(--muted); margin-top: 4px; }
+
+  /* arsitektur diagram */
+  .arch { display: flex; flex-direction: column; gap: 10px; align-items: stretch; }
+  .arch-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; align-items: stretch; }
+  .arch-box {
+    flex: 1 1 240px; text-align: center; border-radius: 14px; padding: 18px 14px;
+    border: 1px solid var(--border); background: #fff;
+  }
+  .arch-box b { display: block; margin-bottom: 4px; }
+  .arch-box span { font-size: .78rem; color: var(--muted); display: block; }
+  .arch-box.tier1 { background: linear-gradient(135deg, var(--indigo), var(--purple)); color: #fff; border: none; }
+  .arch-box.tier1 span { color: rgba(255,255,255,.85); }
+  .arch-box.tier2 { border-color: rgba(103,58,183,.35); }
+  .arch-link { text-align: center; color: var(--muted); font-size: .8rem; font-weight: 600; }
+
+  .erd-tbl td.rel { text-align: center; font-weight: 800; color: var(--purple); white-space: nowrap; font-size: .95rem; }
+  .erd-tbl td code { background: rgba(57,73,171,.07); padding: 2px 7px; border-radius: 6px; font-size: .8rem; color: var(--indigo); }
+
+  /* accordion FAQ */
+  details.faq { background: var(--card); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
+  details.faq summary { padding: 15px 18px; font-weight: 700; font-size: .93rem; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  details.faq summary::after { content: '+'; font-size: 1.3rem; color: var(--purple); font-weight: 700; transition: transform .2s; }
+  details.faq[open] summary::after { transform: rotate(45deg); }
+  details.faq .body { padding: 0 18px 16px; font-size: .9rem; color: var(--muted); }
+
+  /* studi kasus */
+  .bc { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 700px) { .bc { grid-template-columns: 1fr; } }
+  .bc .col { border-radius: var(--radius); padding: 24px; border: 1px solid var(--border); }
+  .bc .col.before { background: #fdf1f1; border-color: #f2cfcf; }
+  .bc .col.after { background: #eff8f3; border-color: #cdeada; }
+  .bc h3 { font-size: 1rem; margin-bottom: 10px; }
+  .bc ul { margin: 0 0 0 18px; font-size: .88rem; }
+  .bc .col.before ul { color: #8a4a4a; }
+  .bc .col.after ul { color: #23684a; }
+
+  footer { background: var(--ink); color: rgba(255,255,255,.75); padding: 40px 0 26px; text-align: center; font-size: .87rem; }
+  footer b { color: #fff; }
+  footer .f-links { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; margin: 14px 0; }
+  footer .f-links a { color: rgba(255,255,255,.65); }
+  footer .f-links a:hover { color: #fff; }
+  footer .credit { margin-top: 16px; font-size: .78rem; opacity: .6; }
+
+  /* ============ TOMBOL WEB ============ */
+  .btn-web {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,.14); color: #fff; font-weight: 700; font-size: .95rem;
+    padding: 15px 24px; border-radius: 13px; border: 1px solid rgba(255,255,255,.55);
+    transition: background .15s, transform .15s;
+  }
+  .btn-web:hover { background: rgba(255,255,255,.28); transform: translateY(-2px); }
+  .btn-web svg { width: 18px; height: 18px; }
+
+  /* ============ FITUR UTAMA ============ */
+  .frow {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 44px; align-items: center;
+    padding: 28px 0; border-bottom: 1px solid var(--border);
+  }
+  .frow:last-child { border-bottom: none; }
+  .frow.reverse .fshot { order: 2; }
+  .frow.reverse .ftext { order: 1; }
+  .frow .num {
+    display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 11px;
+    background: linear-gradient(135deg, var(--indigo-2), var(--purple-2)); color: #fff;
+    font-weight: 800; font-size: .95rem; margin-bottom: 14px;
+  }
+  .frow h3 { font-size: 1.3rem; margin-bottom: 8px; }
+  .frow p { color: var(--muted); font-size: .95rem; }
+  .frow ul { margin: 12px 0 0; list-style: none; }
+  .frow ul li { position: relative; padding-left: 22px; margin: 6px 0; font-size: .9rem; color: var(--muted); }
+  .frow ul li::before { content: '\2713'; position: absolute; left: 0; top: 0; color: var(--green); font-weight: 800; }
+  .fshot { position: relative; justify-self: center; width: min(250px, 70vw); }
+  .fshot img {
+    width: 100%; height: auto; border-radius: 26px;
+    border: 1px solid rgba(31,45,66,.12);
+    box-shadow: 0 24px 50px rgba(31,45,66,.22);
+  }
+  .fshot .fshot-cap {
+    position: absolute; left: 50%; bottom: -13px; transform: translateX(-50%);
+    background: #fff; border: 1px solid var(--border); border-radius: 999px;
+    padding: 5px 14px; font-size: .72rem; font-weight: 700; color: var(--purple);
+    box-shadow: 0 6px 16px rgba(31,45,66,.12); white-space: nowrap;
+  }
+
+  /* ============ RESPONSIF ============ */
+  @media (max-width: 820px) {
+    .frow { grid-template-columns: 1fr; gap: 30px; text-align: center; }
+    .frow.reverse .fshot { order: -1; }
+    .frow ul { text-align: left; max-width: 460px; margin: 12px auto 0; }
+    .hero-cta .btn-download, .hero-cta .btn-web { flex: 1 1 100%; justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= NAV ================= -->
+<nav class="top" id="topnav">
+  <div class="container">
+    <a class="brand" href="#beranda"><img src="img/icon.png" alt="Logo SIMAK Mobile">SIMAK Mobile</a>
+    <button class="nav-btn" onclick="document.getElementById('topnav').classList.toggle('open')">Menu &#9776;</button>
+    <div class="nav-links">
+      <a href="#beranda">Beranda</a>
+      <a href="#tentang">Tentang</a>
+      <a href="#teknologi">Teknologi</a>
+      <a href="#sistem">Sistem</a>
+      <a href="#instalasi">Instalasi</a>
+      <a href="#faq">FAQ</a>
+      <a href="#kontak">Kontak</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ================= 1. BERANDA ================= -->
+<header class="hero gradient" id="beranda">
+  <div class="container">
+    <div class="hero-inner">
+      <span class="badge">Aplikasi Resmi</span>
+      <h1>SIMAK Mobile</h1>
+      <p class="tagline">Sistem Informasi Mahasiswa dalam genggaman Anda.</p>
+      <p class="desc">
+        Aplikasi mobile untuk mengakses data akademik, katalog &amp; peminjaman buku perpustakaan,
+        input prestasi, hingga pengajuan beasiswa — kapan saja dan di mana saja.
+        Dibangun dengan Flutter dan Laravel, dilengkapi rekomendasi beasiswa berbasis logika Fuzzy Mamdani.
+      </p>
+      <div class="hero-cta">
+        <a class="btn-download" href="downloads/simak-mobile.apk" download>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Download APK (Android)
+        </a>
+        <a class="btn-web" href="http://localhost/project-mobile/praktikum24/public" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+          Buka Web Praktikum24
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><b>10+</b><span>Modul Sistem</span></div>
+        <div class="stat"><b>4</b><span>Level Hak Akses</span></div>
+        <div class="stat"><b>14</b><span>Tabel Database</span></div>
+        <div class="stat"><b>30+</b><span>Endpoint API</span></div>
+      </div>
+    </div>
+    <div class="phone-wrap" aria-label="Contoh tampilan aplikasi">
+      <div class="phone">
+        <div class="screen">
+          <div class="p-status"><span>09:41</span><span>&#9679;&#9679;&#9679;</span></div>
+          <div class="p-appbar"><b>SIMAK</b><span>Selamat datang, Mahasiswa</span></div>
+          <div class="p-cards">
+            <div class="p-card"><small>Buku Dipinjam</small><div class="bar w40"></div><span class="p-chip">3 Aktif</span></div>
+            <div class="p-card"><small>Prestasi</small><div class="bar w70"></div><span class="p-chip">2 Disetujui</span></div>
+            <div class="p-card"><small>Beasiswa</small><div class="bar w40"></div><span class="p-chip">Sedang Diproses</span></div>
+            <div class="p-card"><small>Info Program Beasiswa</small><div class="bar w70"></div><div class="bar w40"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ================= 1b. FITUR UTAMA ================= -->
+<section id="fitur" style="background:#fff;">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">Fitur Utama</span>
+      <h2>Semua Kebutuhan Akademik dalam Satu Aplikasi</h2>
+      <p>Jelajahi fitur inti SIMAK Mobile yang dapat Anda gunakan setiap hari.</p>
+    </div>
+
+    <div class="frow">
+      <div class="fshot">
+        <img src="img/screens/login.png" alt="Tampilan halaman Login SIMAK Mobile" loading="lazy">
+        <span class="fshot-cap">Login</span>
+      </div>
+      <div class="ftext">
+        <span class="num">1</span>
+        <h3>Autentikasi Aman &amp; Sesuai Peran</h3>
+        <p>Masuk dengan NIM/email dan password. Sistem mengenali peran Anda sehingga setiap pengguna hanya melihat menu dan data sesuai hak aksesnya.</p>
+        <ul>
+          <li>Login &amp; logout dengan token Bearer (Laravel Sanctum)</li>
+          <li>Password ter-hash bcrypt untuk keamanan akun</li>
+          <li>Empat level pengguna: Admin, Petugas, Mahasiswa, Guest</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="frow reverse">
+      <div class="fshot">
+        <img src="img/screens/dashboard.png" alt="Tampilan dashboard SIMAK Mobile" loading="lazy">
+        <span class="fshot-cap">Dashboard</span>
+      </div>
+      <div class="ftext">
+        <span class="num">2</span>
+        <h3>Dashboard Statistik Real-Time</h3>
+        <p>Pusat kendali berisi ringkasan data akademik: jumlah buku yang dipinjam, status prestasi, hingga pengajuan beasiswa yang sedang berjalan.</p>
+        <ul>
+          <li>Ringkasan statistik disaring otomatis per peran</li>
+          <li>Notifikasi pengguna dengan penanda belum-dibaca</li>
+          <li>Akses cepat ke seluruh modul dari satu layar</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="frow">
+      <div class="fshot">
+        <img src="img/screens/buku.png" alt="Tampilan daftar buku di SIMAK Mobile" loading="lazy">
+        <span class="fshot-cap">Perpustakaan</span>
+      </div>
+      <div class="ftext">
+        <span class="num">3</span>
+        <h3>Katalog Buku &amp; Peminjaman Otomatis</h3>
+        <p>Cari buku dari katalog digital, ajukan peminjaman, dan kembalikan langsung dari aplikasi. Denda keterlambatan dihitung otomatis oleh sistem.</p>
+        <ul>
+          <li>Pencarian &amp; filter katalog buku cepat</li>
+          <li>Catat peminjaman/pengembalian dengan satu ketukan</li>
+          <li>Denda Rp 1.000/hari terhitung otomatis</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="frow reverse">
+      <div class="fshot">
+        <img src="img/screens/prestasi.png" alt="Tampilan form prestasi di SIMAK Mobile" loading="lazy">
+        <span class="fshot-cap">Prestasi</span>
+      </div>
+      <div class="ftext">
+        <span class="num">4</span>
+        <h3>Input Prestasi &amp; Verifikasi Berjenjang</h3>
+        <p>Catat prestasi Anda dengan unggah sertifikat. Admin memverifikasi melalui alur Pending &rarr; Disetujui/Ditolak lengkap dengan riwayat verifikasi.</p>
+        <ul>
+          <li>Unggah sertifikat langsung dari HP (kamera/galeri/file)</li>
+          <li>Alur verifikasi berjenjang &amp; transparan</li>
+          <li>Riwayat status prestasi dapat dipantau</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="frow">
+      <div class="fshot">
+        <img src="img/screens/beasiswa.png" alt="Tampilan beasiswa di SIMAK Mobile" loading="lazy">
+        <span class="fshot-cap">Beasiswa</span>
+      </div>
+      <div class="ftext">
+        <span class="num">5</span>
+        <h3>Pengajuan &amp; Rekomendasi Beasiswa</h3>
+        <p>Ajukan beasiswa dan dapatkan rekomendasi otomatis berbasis logika <b>Fuzzy Mamdani</b> menggunakan IPK serta tingkat prestasi untuk keputusan yang lebih objektif.</p>
+        <ul>
+          <li>Daftar program beasiswa dari admin</li>
+          <li>Rekomendasi otomatis dengan logika Fuzzy Mamdani</li>
+          <li>Pantau status pengajuan secara real-time</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="frow reverse">
+      <div class="fshot">
+        <img src="img/screens/profil.png" alt="Tampilan profil di SIMAK Mobile" loading="lazy">
+        <span class="fshot-cap">Profil</span>
+      </div>
+      <div class="ftext">
+        <span class="num">6</span>
+        <h3>Profil &amp; Pengaturan Akun</h3>
+        <p>Kelola data diri dan keamanan akun Anda — ubah profil, perbarui password, dan pantau peran serta akses yang dimiliki.</p>
+        <ul>
+          <li>Lihat &amp; ubah data diri</li>
+          <li>Perbarui password dengan aman</li>
+          <li>Informasi peran &amp; hak akses pengguna</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 2. TENTANG ================= -->
+<section id="tentang">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">Tentang</span>
+      <h2>Kenapa SIMAK Mobile Dikembangkan?</h2>
+      <p>Ringkasan latar belakang, tujuan, target pengguna, dan manfaat sistem.</p>
+    </div>
+    <div class="grid-2 about-cards">
+      <div class="card">
+        <div class="ic gradient">&#128220;</div>
+        <h3>Latar Belakang</h3>
+        <p>
+          Pengelolaan data akademik sering dilakukan secara manual dan tersebar di beberapa buku register
+          maupun file spreadsheet. Akibatnya data mudah terduplikasi, sulit dicari, dan pemantauan
+          prestasi, peminjaman buku, maupun pengajuan beasiswa menjadi lambat. SIMAK Mobile hadir untuk
+          memusatkan seluruh data dalam satu sistem terintegrasi yang dapat diakses dari perangkat mobile.
+        </p>
+      </div>
+      <div class="card">
+        <div class="ic gradient">&#127919;</div>
+        <h3>Tujuan</h3>
+        <p>
+          Mendigitalisasi pengelolaan data mahasiswa, perpustakaan, prestasi, dan beasiswa;
+          menyediakan akses informasi real-time bagi mahasiswa dan staf; mempercepat proses
+          verifikasi prestasi dan peminjaman buku; serta membantu pengambilan keputusan pemberian
+          beasiswa melalui rekomendasi otomatis berbasis logika fuzzy.
+        </p>
+      </div>
+      <div class="card">
+        <div class="ic gradient">&#128101;</div>
+        <h3>Target Pengguna</h3>
+        <p>
+          <b>Mahasiswa</b> (melihat data diri, meminjam buku, input prestasi, mengajukan beasiswa),
+          <b>Petugas</b> (mengelola katalog buku dan proses peminjaman/pengembalian),
+          <b>Admin</b> (mengelola seluruh data, verifikasi, hak akses, dan laporan), serta
+          <b>Guest</b> (pengunjung dengan hak baca).
+        </p>
+      </div>
+      <div class="card">
+        <div class="ic gradient">&#11088;</div>
+        <h3>Manfaat</h3>
+        <p>
+          Akses data kapan saja dan di mana saja; transparansi status pengajuan (prestasi/beasiswa);
+          penghematan waktu input manual; pengurangan duplikasi dan kesalahan data;
+          perhitungan denda keterlambatan otomatis; serta keputusan beasiswa yang lebih objektif
+          berkat rekomendasi otomatis.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 3. KEUNGGULAN ================= -->
+<section id="keunggulan" style="background:#fff; border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">Keunggulan</span>
+      <h2>Mengapa Memilih SIMAK Mobile?</h2>
+      <p>Fitur unggulan yang membedakan dari sistem manual maupun aplikasi lain.</p>
+    </div>
+    <div class="grid-3">
+      <div class="feature">
+        <div class="f-icon gradient">&#129504;</div>
+        <h3>Rekomendasi Beasiswa Fuzzy</h3>
+        <p>Perhitungan rekomendasi beasiswa otomatis dengan metode Fuzzy Mamdani berdasarkan IPK dan skor tingkat prestasi (kampus s/d internasional).</p>
+      </div>
+      <div class="feature">
+        <div class="f-icon gradient">&#9989;</div>
+        <h3>Verifikasi Prestasi Berjenjang</h3>
+        <p>Prestasi mahasiswa melewati alur Pending → Disetujui/Ditolak oleh admin, lengkap dengan unggah sertifikat dan riwayat verifikasi.</p>
+      </div>
+      <div class="feature">
+        <div class="f-icon gradient">&#128214;</div>
+        <h3>Peminjaman &amp; Denda Otomatis</h3>
+        <p>Catat peminjaman dan pengembalian buku dengan mudah; denda keterlambatan (Rp 1.000/hari) dihitung otomatis dan status terlambat terdeteksi.</p>
+      </div>
+      <div class="feature">
+        <div class="f-icon gradient">&#128273;</div>
+        <h3>Hak Akses Per-Role (RBAC)</h3>
+        <p>Empat level pengguna (Admin, Petugas, Mahasiswa, Guest) dengan izin create/read/update/delete/export yang dapat diatur di modul Hak Akses.</p>
+      </div>
+      <div class="feature">
+        <div class="f-icon gradient">&#128276;</div>
+        <h3>Notifikasi Pengguna</h3>
+        <p>Notifikasi aplikasi untuk pengguna terkait status prestasi, beasiswa, atau peminjaman, dengan penanda belum-dibaca.</p>
+      </div>
+      <div class="feature">
+        <div class="f-icon gradient">&#128241;</div>
+        <h3>Mobile-First &amp; Responsif</h3>
+        <p>Dibangun dengan Flutter untuk pengalaman asli di Android, ditambah antarmuka web admin yang responsif menggunakan Bootstrap 5.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 5. SISTEM ================= -->
+<section id="sistem" style="background:#fff; border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">Sistem</span>
+      <h2>Alur Penggunaan, Role, dan Modul</h2>
+      <p>Bagaimana sistem bekerja untuk setiap pengguna, lengkap dengan hak akses dan modul yang tersedia.</p>
+    </div>
+
+    <h3 style="margin-bottom:14px; font-size:1.05rem;">Alur Penggunaan</h3>
+    <div class="flow">
+      <div class="card">
+        <div class="role-head"><span class="dot" style="background:#3949AB;">M</span><b>Mahasiswa</b></div>
+        <ol>
+          <li>Login menggunakan NIM (atau email) + password</li>
+          <li>Lihat dashboard data diri dan statistik</li>
+          <li>Cari buku &amp; lakukan peminjaman</li>
+          <li>Input prestasi + unggah sertifikat</li>
+          <li>Ajukan beasiswa dan pantau statusnya</li>
+        </ol>
+      </div>
+      <div class="card">
+        <div class="role-head"><span class="dot" style="background:#673AB7;">P</span><b>Petugas</b></div>
+        <ol>
+          <li>Login dengan akun petugas</li>
+          <li>Kelola katalog buku (tambah/edit)</li>
+          <li>Catat peminjaman &amp; pengembalian buku</li>
+          <li>Kelola data mahasiswa</li>
+        </ol>
+      </div>
+      <div class="card">
+        <div class="role-head"><span class="dot" style="background:#7B1FA2;">A</span><b>Admin</b></div>
+        <ol>
+          <li>Login dengan akun admin</li>
+          <li>Verifikasi prestasi mahasiswa</li>
+          <li>Jalankan rekomendasi beasiswa (Fuzzy)</li>
+          <li>Kelola hak akses, petugas, &amp; seluruh data</li>
+        </ol>
+      </div>
+    </div>
+
+    <h3 style="margin:34px 0 14px; font-size:1.05rem;">Role &amp; Hak Akses</h3>
+    <div class="table-wrap">
+      <table class="tbl">
+        <thead>
+          <tr><th>Role</th><th>Level</th><th>Create</th><th>Read</th><th>Update</th><th>Delete</th><th>Export</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><b>Admin</b> — akses penuh</td><td>1</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td></tr>
+          <tr><td><b>Petugas</b> — operasional</td><td>2</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td><td class="no">&#10007;</td><td class="yes">&#10003;</td></tr>
+          <tr><td><b>Mahasiswa</b> — data sendiri</td><td>3</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td><td class="yes">&#10003;*</td><td class="no">&#10007;</td><td class="no">&#10007;</td></tr>
+          <tr><td><b>Guest</b> — hanya baca</td><td>4</td><td class="no">&#10007;</td><td class="yes">&#10003;</td><td class="no">&#10007;</td><td class="no">&#10007;</td><td class="no">&#10007;</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">* Mahasiswa hanya dapat mengubah/menambah data miliknya sendiri (mis. prestasi). Hak akses diatur dinamis pada modul <b>Hak Akses</b> oleh admin.</p>
+
+    <h3 style="margin:34px 0 14px; font-size:1.05rem;">Modul Sistem</h3>
+    <div class="modul">
+      <span class="chip">&#9635; <b>Dashboard</b> — statistik</span>
+      <span class="chip">&#128101; <b>Mahasiswa</b> — data mahasiswa</span>
+      <span class="chip">&#128214; <b>Buku</b> — katalog</span>
+      <span class="chip">&#128260; <b>Peminjaman</b> — pinjam/kembali</span>
+      <span class="chip">&#127942; <b>Prestasi</b> — input &amp; verifikasi</span>
+      <span class="chip">&#128081; <b>Beasiswa</b> — pengajuan &amp; rekomendasi</span>
+      <span class="chip">&#127891; <b>Program Beasiswa</b> — master</span>
+      <span class="chip">&#128273; <b>Hak Akses</b> — manajemen role</span>
+      <span class="chip">&#128188; <b>Petugas</b> — data petugas</span>
+      <span class="chip">&#128276; <b>Notifikasi</b> — pemberitahuan</span>
+      <span class="chip">&#128100; <b>Profil</b> — akun pengguna</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 6. TEKNOLOGI ================= -->
+<section id="teknologi">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">Teknologi</span>
+      <h2>Stack Teknologi yang Digunakan</h2>
+      <p>Kombinasi teknologi modern untuk frontend, backend, database, hingga deployment.</p>
+    </div>
+    <div class="tech">
+      <div class="pill"><span class="pill-ic">&#128241;</span><div class="p-txt"><div class="cat">Frontend Mobile</div><b>Flutter 3.41 &bull; Dart</b><p>Provider, Dio, SharedPreferences, Intl, Image Picker, File Picker</p></div></div>
+      <div class="pill"><span class="pill-ic">&#127760;</span><div class="p-txt"><div class="cat">Frontend Web</div><b>Blade &bull; Bootstrap 5</b><p>Templating Laravel dengan Bootstrap 5 via CDN dan CSS inline</p></div></div>
+      <div class="pill"><span class="pill-ic">&#9881;&#65039;</span><div class="p-txt"><div class="cat">Backend</div><b>Laravel 13 &bull; PHP 8.3</b><p>Laravel Sanctum (auth API token), Eloquent ORM, REST API</p></div></div>
+      <div class="pill"><span class="pill-ic">&#128451;&#65039;</span><div class="p-txt"><div class="cat">Database</div><b>MySQL</b><p>Relasional dengan indeks, foreign key, dan migrasi</p></div></div>
+      <div class="pill"><span class="pill-ic">&#128421;&#65039;</span><div class="p-txt"><div class="cat">Server</div><b>Apache &bull; PHP 8.3</b><p>Laragon untuk pengembangan lokal, InfinityFree (shared hosting) untuk produksi</p></div></div>
+      <div class="pill"><span class="pill-ic">&#129504;</span><div class="p-txt"><div class="cat">Algoritma</div><b>Fuzzy Mamdani</b><p>Fuzzifikasi IPK &amp; prestasi, aturan inferensi, dan defuzzifikasi untuk rekomendasi beasiswa</p></div></div>
+      <div class="pill"><span class="pill-ic">&#129520;</span><div class="p-txt"><div class="cat">Tooling</div><b>Composer &bull; Vite &bull; Git</b><p>Manajemen dependensi PHP, build aset, dan kontrol versi</p></div></div>
+      <div class="pill"><span class="pill-ic">&#128640;</span><div class="p-txt"><div class="cat">Deployment</div><b>InfinityFree</b><p>Upload via FTP/File Manager, MySQL remote, domain &amp; SSL gratis</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 7. ARSITEKTUR ================= -->
+<section id="arsitektur" style="background:#fff; border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">Arsitektur &amp; Database</span>
+      <h2>Arsitektur, Struktur Database, dan API</h2>
+      <p>Gambaran bagaimana komponen terhubung, relasi antar tabel, serta dokumentasi API.</p>
+    </div>
+
+    <h3 style="font-size:1.05rem; margin-bottom:14px;">Arsitektur Sistem (Mobile)</h3>
+    <div class="arch">
+      <div class="arch-row">
+        <div class="arch-box tier1"><b>SIMAK Mobile</b><span>Flutter (Android) &bull; antarmuka mobile</span></div>
+      </div>
+      <div class="arch-link">&#8595;&nbsp; HTTPS / JSON API (token Sanctum) &nbsp;&#8593;</div>
+      <div class="arch-row">
+        <div class="arch-box tier2"><b>Backend Laravel 13</b><span>REST API &bull; RBAC &bull; Fuzzy Mamdani &bull; Eloquent</span></div>
+      </div>
+      <div class="arch-link">&#8595;</div>
+      <div class="arch-row">
+        <div class="arch-box"><b>Database MySQL</b><span>14 tabel utama + tabel pendukung</span></div>
+      </div>
+    </div>
+
+    <h3 style="font-size:1.05rem; margin:34px 0 14px;">Database — Gambaran Umum</h3>
+    <div class="table-wrap">
+      <table class="tbl">
+        <thead><tr><th>Tabel</th><th>Deskripsi</th></tr></thead>
+        <tbody>
+          <tr><td><b>users</b></td><td>Akun pengguna (admin/petugas/mahasiswa) dengan field role &amp; mahasiswa_id</td></tr>
+          <tr><td><b>hak_akses</b></td><td>Definisi role dan izin CRUD+export per level</td></tr>
+          <tr><td><b>mhs</b></td><td>Data mahasiswa (NIM, identitas, prodi, fakultas, semester, IPK)</td></tr>
+          <tr><td><b>buku</b></td><td>Katalog buku (kode, judul, pengarang, stok, status)</td></tr>
+          <tr><td><b>petugas</b></td><td>Data petugas perpustakaan</td></tr>
+          <tr><td><b>peminjaman</b></td><td>Transaksi pinjam/kembali + status &amp; denda</td></tr>
+          <tr><td><b>jenis_prestasi / tingkat_prestasi</b></td><td>Master jenis dan tingkat prestasi</td></tr>
+          <tr><td><b>prestasi</b></td><td>Prestasi mahasiswa + status verifikasi + sertifikat</td></tr>
+          <tr><td><b>verifikasi_prestasi</b></td><td>Riwayat verifikasi oleh admin</td></tr>
+          <tr><td><b>program_beasiswa</b></td><td>Master program beasiswa</td></tr>
+          <tr><td><b>beasiswa</b></td><td>Pengajuan beasiswa mahasiswa</td></tr>
+          <tr><td><b>fuzzy_hasil</b></td><td>Hasil rekomendasi beasiswa per mahasiswa</td></tr>
+          <tr><td><b>notifications</b></td><td>Notifikasi per pengguna</td></tr>
+          <tr><td><b>personal_access_tokens</b></td><td>Token API Sanctum</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="font-size:1.05rem; margin:34px 0 14px;">Relasi / ERD</h3>
+    <div class="table-wrap">
+      <table class="tbl erd-tbl">
+        <thead><tr><th>Tabel</th><th>Relasi</th><th>Tabel</th><th>Kolom Penghubung</th></tr></thead>
+        <tbody>
+          <tr><td><b>users</b></td><td class="rel">1 &#8594; 1</td><td><b>mhs</b></td><td><code>users.mahasiswa_id</code></td></tr>
+          <tr><td><b>users</b></td><td class="rel">1 &#8594; N</td><td><b>hak_akses</b></td><td><code>users.role = hak_akses.nama_role</code></td></tr>
+          <tr><td><b>mhs</b></td><td class="rel">1 &#8594; N</td><td><b>peminjaman</b></td><td><code>mhs.id</code></td></tr>
+          <tr><td><b>mhs</b></td><td class="rel">1 &#8594; N</td><td><b>prestasi</b></td><td><code>mhs.id</code></td></tr>
+          <tr><td><b>mhs</b></td><td class="rel">1 &#8594; N</td><td><b>beasiswa</b></td><td><code>mhs.id</code></td></tr>
+          <tr><td><b>mhs</b></td><td class="rel">1 &#8594; 1</td><td><b>fuzzy_hasil</b></td><td><code>mhs.id</code></td></tr>
+          <tr><td><b>buku</b></td><td class="rel">1 &#8594; N</td><td><b>peminjaman</b></td><td><code>buku.id</code></td></tr>
+          <tr><td><b>petugas</b></td><td class="rel">1 &#8594; N</td><td><b>peminjaman</b></td><td><code>petugas.id</code></td></tr>
+          <tr><td><b>jenis_prestasi</b></td><td class="rel">1 &#8594; N</td><td><b>prestasi</b></td><td><code>prestasi.jenis_prestasi_id</code></td></tr>
+          <tr><td><b>tingkat_prestasi</b></td><td class="rel">1 &#8594; N</td><td><b>prestasi</b></td><td><code>prestasi.tingkat_prestasi_id</code></td></tr>
+          <tr><td><b>prestasi</b></td><td class="rel">1 &#8594; 1</td><td><b>verifikasi_prestasi</b></td><td><code>prestasi.id</code></td></tr>
+          <tr><td><b>users</b></td><td class="rel">1 &#8594; N</td><td><b>verifikasi_prestasi</b></td><td><code>users.id (admin_id)</code></td></tr>
+          <tr><td><b>program_beasiswa</b></td><td class="rel">1 &#8594; N</td><td><b>beasiswa</b></td><td><code>program_beasiswa.id</code></td></tr>
+          <tr><td><b>users</b></td><td class="rel">1 &#8594; N</td><td><b>notifications</b></td><td><code>users.id (user_id)</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note"><b>Legenda relasi:</b> <b>1 &#8594; 1</b> = satu ke satu &bull; <b>1 &#8594; N</b> = satu ke banyak &bull; <b>&#8594;</b> = arah penghubung antar tabel. Kolom penghubung adalah foreign key yang menghubungkan kedua tabel.</div>
+
+    <h3 style="font-size:1.05rem; margin:34px 0 14px;">Dokumentasi API</h3>
+    <div class="table-wrap">
+      <table class="tbl">
+        <thead><tr><th>Metode</th><th>Endpoint</th><th>Deskripsi</th></tr></thead>
+        <tbody>
+          <tr><td>POST</td><td><code>/api/login</code></td><td>Login dengan NIM/email + password, mengembalikan token Bearer</td></tr>
+          <tr><td>POST</td><td><code>/api/logout</code></td><td>Mengakhiri sesi &amp; menghapus token</td></tr>
+          <tr><td>GET</td><td><code>/api/dashboard</code></td><td>Statistik dashboard (data disaring per role)</td></tr>
+          <tr><td>GET/POST</td><td><code>/api/mahasiswa</code></td><td>Daftar / tambah mahasiswa</td></tr>
+          <tr><td>GET/PUT/DELETE</td><td><code>/api/mahasiswa/{id}</code></td><td>Detail / ubah / hapus mahasiswa</td></tr>
+          <tr><td>GET/POST</td><td><code>/api/buku</code></td><td>Daftar / tambah buku</td></tr>
+          <tr><td>GET/PUT/DELETE</td><td><code>/api/buku/{id}</code></td><td>Detail / ubah / hapus buku</td></tr>
+          <tr><td>GET/POST</td><td><code>/api/peminjaman</code></td><td>Daftar / tambah peminjaman</td></tr>
+          <tr><td>GET/PUT/DELETE</td><td><code>/api/peminjaman/{id}</code></td><td>Detail / ubah / hapus peminjaman</td></tr>
+          <tr><td>POST</td><td><code>/api/peminjaman/{id}/pengembalian</code></td><td>Proses pengembalian buku &amp; hitung denda</td></tr>
+          <tr><td>GET/POST</td><td><code>/api/prestasi</code></td><td>Daftar / tambah prestasi (dengan sertifikat)</td></tr>
+          <tr><td>POST</td><td><code>/api/prestasi/{id}/verifikasi</code></td><td>Verifikasi prestasi (Setujui/Tolak)</td></tr>
+          <tr><td>GET/POST</td><td><code>/api/beasiswa</code></td><td>Daftar / tambah pengajuan beasiswa</td></tr>
+          <tr><td>POST</td><td><code>/api/beasiswa/hitung-rekomendasi</code></td><td>Jalankan rekomendasi Fuzzy Mamdani</td></tr>
+          <tr><td>CRUD</td><td><code>/api/petugas</code>, <code>/api/hak-akses</code>, <code>/api/jenis-prestasi</code>, <code>/api/tingkat-prestasi</code>, <code>/api/program-beasiswa</code></td><td>Modul manajemen pendukung</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Seluruh endpoint (kecuali <code>/api/login</code>) dilindungi middleware <code>auth:sanctum</code> dan membutuhkan header <code>Authorization: Bearer &lt;token&gt;</code>. Respons mengikuti pola JSON (termasuk paginasi 20 data/halaman).</p>
+  </div>
+</section>
+
+<!-- ================= 8. INSTALASI ================= -->
+<section id="instalasi">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">Instalasi</span>
+      <h2>Langkah Instalasi</h2>
+      <p>Dari pemasangan aplikasi di HP Android hingga setup server backend.</p>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <h3 style="margin-bottom:12px;">&#128241; Untuk Pengguna (Android)</h3>
+        <ol style="margin-left:18px; font-size:.9rem; color:var(--muted);">
+          <li>Unduh file <b>simak-mobile.apk</b> melalui tombol download di halaman ini.</li>
+          <li>Buka file APK; jika muncul peringatan, izinkan <b>"Instal aplikasi tidak dikenal"</b> untuk browser.</li>
+          <li>Tekan <b>Instal</b> dan tunggu hingga selesai.</li>
+          <li>Buka aplikasi, login dengan NIM/email + password, lalu nikmati fiturnya.</li>
+        </ol>
+        <div class="note">Koneksi internet diperlukan untuk mengakses server API.</div>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:12px;">&#128295; Untuk Developer (Backend)</h3>
+        <ol style="margin-left:18px; font-size:.9rem; color:var(--muted);">
+          <li>Clone/salin project <code>praktikum24</code> lalu jalankan <code>composer install</code>.</li>
+          <li>Salin <code>.env.example</code> menjadi <code>.env</code> dan sesuaikan konfigurasi database.</li>
+          <li>Jalankan <code>php artisan key:generate</code>.</li>
+          <li>Buat database, lalu <code>php artisan migrate --seed</code> untuk tabel + data awal.</li>
+          <li>Jalankan <code>php artisan serve</code> (default port 8000) dan pastikan API merespons.</li>
+          <li>Build aplikasi Flutter: <code>flutter build apk --release</code> (tambahkan <code>--dart-define=API_URL=...</code> untuk alamat server).</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 9. SPESIFIKASI ================= -->
+<section id="spesifikasi" style="background:#fff; border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">Spesifikasi</span>
+      <h2>Kebutuhan Sistem, Keamanan &amp; Performa</h2>
+      <p>Detail persyaratan perangkat, aspek keamanan, dan strategi performa.</p>
+    </div>
+    <div class="grid-3">
+      <div class="card">
+        <div class="f-icon gradient" style="width:46px;height:46px;border-radius:12px;display:grid;place-items:center;color:#fff;margin-bottom:12px;">&#128421;</div>
+        <h3 style="font-size:1rem; margin-bottom:6px;">Kebutuhan Sistem</h3>
+        <p style="font-size:.88rem; color:var(--muted);">
+          <b>Aplikasi:</b> Android 8.0+, RAM 2 GB, ruang 100 MB, koneksi internet.<br><br>
+          <b>Server:</b> PHP 8.3+, MySQL, Apache/Nginx, kompatibel shared hosting (InfinityFree).<br><br>
+          <b>Pengembangan:</b> Flutter SDK 3.x, Composer, Node.js (opsional untuk build aset).
+        </p>
+      </div>
+      <div class="card">
+        <div class="f-icon gradient" style="width:46px;height:46px;border-radius:12px;display:grid;place-items:center;color:#fff;margin-bottom:12px;">&#128274;</div>
+        <h3 style="font-size:1rem; margin-bottom:6px;">Keamanan</h3>
+        <p style="font-size:.88rem; color:var(--muted);">
+          Autentikasi token <b>Laravel Sanctum</b> (Bearer token); password di-hash <b>bcrypt</b>;
+          validasi request di sisi server; kontrol akses berbasis peran (<b>RBAC</b>) dengan middleware admin;
+          pembatasan data per pengguna (mahasiswa hanya melihat datanya sendiri); proteksi file unggahan;
+          komunikasi via <b>HTTPS</b>; dan berkas sensitif (<code>.env</code>) tidak terekspos publik.
+        </p>
+      </div>
+      <div class="card">
+        <div class="f-icon gradient" style="width:46px;height:46px;border-radius:12px;display:grid;place-items:center;color:#fff;margin-bottom:12px;">&#9889;</div>
+        <h3 style="font-size:1rem; margin-bottom:6px;">Performa</h3>
+        <p style="font-size:.88rem; color:var(--muted);">
+          <b>Paginasi</b> (20 data/halaman) agar respons cepat; <b>eager loading</b> relasi untuk menghindari N+1;
+          indeks &amp; foreign key pada kolom relasi; autoloader teroptimasi (<code>--optimize-autoloader</code>);
+          cache &amp; queue berbasis database untuk operasi ringan; tampilan web memakai CDN untuk mengurangi beban server.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 10. STUDI KASUS ================= -->
+<section id="studi">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">Studi Kasus</span>
+      <h2>Sebelum &amp; Sesudah Menggunakan SIMAK</h2>
+      <p>Perbandingan proses manual dengan penggunaan sistem terdigitalisasi.</p>
+    </div>
+    <div class="bc">
+      <div class="col before">
+        <h3>&#128078; Sebelum (Manual)</h3>
+        <ul>
+          <li>Data mahasiswa, buku, dan prestasi dicatat di buku register &amp; spreadsheet terpisah.</li>
+          <li>Pencarian data lambat dan rentan duplikasi/salah input.</li>
+          <li>Peminjaman buku dicatat manual; denda dihitung dengan kalkulasi tangan.</li>
+          <li>Verifikasi prestasi dan pengajuan beasiswa memakan waktu lama karena harus mendatangi bagian administrasi.</li>
+          <li>Monitoring dan pelaporan (mis. siapa peminjam terlambat) sulit dan sering terlambat.</li>
+        </ul>
+      </div>
+      <div class="col after">
+        <h3>&#128077; Sesudah (Digital)</h3>
+        <ul>
+          <li>Seluruh data terpusat dalam satu database dengan relasi yang jelas.</li>
+          <li>Input sekali saja; pencarian &amp; filter cepat langsung dari aplikasi.</li>
+          <li>Peminjaman/pengembalian tercatat otomatis, denda keterlambatan dihitung sistem.</li>
+          <li>Mahasiswa dapat input prestasi &amp; mengajukan beasiswa dari HP; admin memverifikasi secara online.</li>
+          <li>Rekomendasi beasiswa otomatis (Fuzzy Mamdani) mempercepat &amp; membuat keputusan lebih objektif.</li>
+          <li>Dashboard statistik memberikan gambaran kondisi akademik secara real-time.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 11. FAQ ================= -->
+<section id="faq" style="background:#fff; border-top:1px solid var(--border);">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">FAQ</span>
+      <h2>Pertanyaan yang Sering Diajukan</h2>
+      <p>Jawaban singkat untuk pertanyaan umum seputar SIMAK Mobile.</p>
+    </div>
+    <div style="max-width:760px; margin:0 auto;">
+      <details class="faq">
+        <summary>Bagaimana cara login ke aplikasi?</summary>
+        <div class="body">Masukkan <b>NIM</b> atau <b>email</b> beserta password pada halaman login, lalu tekan tombol Masuk. Akun mahasiswa umumnya menggunakan NIM dengan password default <code>password</code>.</div>
+      </details>
+      <details class="faq">
+        <summary>Apa saja akun uji coba yang tersedia?</summary>
+        <div class="body">Admin: <code>admin@simak.com</code> / <code>admin123</code>. Petugas: <code>petugas@simak.com</code> / <code>petugas123</code>. Mahasiswa: login pakai NIM dengan password <code>password</code>.</div>
+      </details>
+      <details class="faq">
+        <summary>Muncul peringatan "sumber tidak dikenal", bagaimana mengatasinya?</summary>
+        <div class="body">Karena APK diunduh langsung dari browser (bukan Play Store), Android akan meminta izin. Buka Pengaturan &rarr; Aplikasi &rarr; browser Anda &rarr; aktifkan <b>Instal aplikasi tidak dikenal</b>, lalu ulangi instalasi.</div>
+      </details>
+      <details class="faq">
+        <summary>Apakah aplikasi ini berbayar?</summary>
+        <div class="body">Tidak. SIMAK Mobile gratis untuk pengguna internal. Biaya hanya berasal dari penyedia hosting dan domain (jika memakai layanan berbayar).</div>
+      </details>
+      <details class="faq">
+        <summary>Apakah data saya aman?</summary>
+        <div class="body">Ya. Setiap permintaan API dilindungi token Bearer, password di-hash, akses dibatasi per peran, dan komunikasi menggunakan HTTPS. Mahasiswa hanya dapat melihat data miliknya sendiri.</div>
+      </details>
+      <details class="faq">
+        <summary>Apakah tersedia untuk iPhone / iOS?</summary>
+        <div class="body">Proyek ini sudah menyertakan struktur project iOS, namun saat ini distribusi difokuskan pada Android (APK). Versi iOS dapat dibangun saat diperlukan dengan akun developer Apple.</div>
+      </details>
+      <details class="faq">
+        <summary>Aplikasi tidak bisa terhubung ke server, kenapa?</summary>
+        <div class="body">Pastikan koneksi internet aktif dan alamat API (<code>API_URL</code>) pada build aplikasi mengarah ke server yang benar. Jika server dalam mode pengembangan di komputer Anda, pastikan <code>php artisan serve</code> berjalan.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 12. KONTAK ================= -->
+<section id="kontak">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">Kontak</span>
+      <h2>Hubungi Kami</h2>
+      <p>Untuk bantuan, saran, atau laporan kendala, silakan hubungi tim SIMAK.</p>
+    </div>
+    <div class="grid-3" style="max-width:800px; margin:0 auto;">
+      <div class="card" style="text-align:center;">
+        <div class="f-icon gradient" style="width:46px;height:46px;border-radius:12px;display:grid;place-items:center;color:#fff;margin:0 auto 10px;">&#9993;</div>
+        <h3 style="font-size:1rem;">Email</h3>
+        <p style="font-size:.88rem; color:var(--muted);"><a href="mailto:simak@example.com">simak@example.com</a></p>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div class="f-icon gradient" style="width:46px;height:46px;border-radius:12px;display:grid;place-items:center;color:#fff;margin:0 auto 10px;">&#128222;</div>
+        <h3 style="font-size:1rem;">WhatsApp</h3>
+        <p style="font-size:.88rem; color:var(--muted);">+62 8xx-xxxx-xxxx</p>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div class="f-icon gradient" style="width:46px;height:46px;border-radius:12px;display:grid;place-items:center;color:#fff;margin:0 auto 10px;">&#127968;</div>
+        <h3 style="font-size:1rem;">Kantor</h3>
+        <p style="font-size:.88rem; color:var(--muted);">Alamat instansi / kampus Anda</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <b>SIMAK Mobile</b> &mdash; Sistem Informasi Mahasiswa
+    <div class="f-links">
+      <a href="#beranda">Beranda</a>
+      <a href="#tentang">Tentang</a>
+      <a href="#teknologi">Teknologi</a>
+      <a href="#sistem">Sistem</a>
+      <a href="#instalasi">Instalasi</a>
+      <a href="#faq">FAQ</a>
+      <a href="#kontak">Kontak</a>
+      <a href="downloads/simak-mobile.apk" download>Download APK</a>
+      <a href="http://localhost/project-mobile/praktikum24/public" target="_blank" rel="noopener">Web Praktikum24</a>
+    </div>
+    <div class="credit">&copy; <span id="year"></span> SIMAK. Seluruh hak cipta dilindungi.</div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+  document.querySelectorAll('nav.top a').forEach(function (a) {
+    a.addEventListener('click', function () { document.getElementById('topnav').classList.remove('open'); });
+  });
+</script>
+</body>
+</html>
