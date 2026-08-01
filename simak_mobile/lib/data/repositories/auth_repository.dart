@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/api/api_client.dart';
+import '../../core/api/api_exception.dart';
 import '../models/user.dart';
 
 class AuthRepository {
@@ -12,14 +13,24 @@ class AuthRepository {
   final ApiClient _api = ApiClient.instance;
 
   Future<User> login(String nimOrEmail, String password) async {
-    final response = await _api.request(
+    final raw = await _api.request(
       '/login',
       method: 'POST',
       data: {'nim': nimOrEmail, 'password': password},
-    ) as Map<String, dynamic>;
+    );
 
-    final token = response['token'] as String;
-    final user = User.fromJson(response['user'] as Map<String, dynamic>);
+    final response = _asJsonMap(raw, endpoint: '/login');
+    final userData = _asJsonMap(response['user'], endpoint: '/login', field: 'user');
+
+    final token = response['token'];
+    if (token is! String || token.isEmpty) {
+      throw ApiException(
+        message: 'Respons /login tidak valid: field "token" hilang atau bukan '
+            'string (tipe: ${token == null ? 'null' : token.runtimeType}).',
+      );
+    }
+
+    final user = User.fromJson(userData);
 
     _api.token = token;
 
@@ -46,7 +57,33 @@ class AuthRepository {
     if (userRaw == null) return null;
 
     _api.token = token;
-    return User.fromJson(jsonDecode(userRaw) as Map<String, dynamic>);
+    try {
+      return User.fromJson(
+        _asJsonMap(jsonDecode(userRaw), endpoint: 'restore-session'),
+      );
+    } catch (_) {
+      await prefs.remove(_tokenKey);
+      await prefs.remove(_userKey);
+      return null;
+    }
+  }
+
+  Map<String, dynamic> _asJsonMap(
+    Object? value, {
+    required String endpoint,
+    String field = 'respons',
+  }) {
+    if (value is Map<String, dynamic>) return value;
+    final snippet = value == null
+        ? 'null'
+        : value.toString().replaceAll(RegExp(r'\s+'), ' ').trim();
+    final truncated =
+        snippet.length > 200 ? '${snippet.substring(0, 200)}…' : snippet;
+    throw ApiException(
+      message: 'Respons $endpoint tidak valid: field "$field" bukan objek JSON. '
+          'Tipe: ${value == null ? 'null' : value.runtimeType}. '
+          'Isi: $truncated',
+    );
   }
 
   Future<void> updateStoredUser({
